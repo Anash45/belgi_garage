@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Date Picker with Future Dates Restriction</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    </head>
+
+    <body>
+        <input type="text" id="datePicker" placeholder="Select a date" readonly>
+        <select id="start_time">
+            <option value="">Select Start Time</option>
+        </select>
+        <select id="end_time">
+            <option value="">Select End Time</option>
+        </select>
+        <script>
+            // JSON data representing availability
+            const availabilityData = [
+                { "full_time": "0" },
+                { "mon": { "mon_start": "02:00:00", "mon_end": "04:00:00" } },
+                { "tue": { "tue_start": "01:00:00", "tue_end": "16:00:00" } },
+                { "wed": { "wed_start": "09:00:00", "wed_end": "14:00:00" } },
+                { "thu": { "thu_start": "09:00:00", "thu_end": "17:00:00" } },
+                { "fri": { "fri_start": "00:00:00", "fri_end": "00:00:00" } },
+                { "sat": { "sat_start": "00:00:00", "sat_end": "00:00:00" } },
+                { "sun": { "sun_start": "00:00:00", "sun_end": "00:00:00" } }
+            ];
+
+            // Check the value of `full_time`
+            const full_time = availabilityData[0].full_time === "1";
+            // Function to check if a day has available start and end times
+            function isAvailable(day) {
+                const dayData = availabilityData.find(obj => obj[day]);
+                if (dayData) {
+                    const { [`${day}_start`]: start, [`${day}_end`]: end } = dayData[day];
+                    return start !== "00:00:00" && end !== "00:00:00";
+                }
+                return false;
+            }
+            // Function to get available times for a given day
+            function getAvailableTimes(day) {
+                const dayData = availabilityData.find(obj => obj[day]);
+                if (dayData) {
+                    const { [`${day}_start`]: start, [`${day}_end`]: end } = dayData[day];
+                    return { start, end };
+                }
+                return { start: "00:00:00", end: "00:00:00" };
+            }
+
+            // Initialize Flatpickr with conditional date enabling
+            flatpickr("#datePicker", {
+                minDate: "today",
+                maxDate: new Date().fp_incr(6), // Next 6 days
+                dateFormat: "m/d/Y - D",        // Specify the date format
+                enable: [
+                    function (date) {
+                        // If full_time is true, enable all dates
+                        if (full_time) return true;
+
+                        // Get the day name from the date
+                        const dayNames = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+                        const dayName = dayNames[date.getDay()]; // Get the day name from the date
+
+                        // Enable only if the day has available hours
+                        return isAvailable(dayName);
+                    }
+                ],
+                onChange: function (selectedDates) {
+                    const selectedDate = selectedDates[0];
+                    const dayNames = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+                    const dayName = dayNames[selectedDate.getDay()]; // Get the day name from the date
+
+                    // Get available times for the selected day
+                    const { start, end } = getAvailableTimes(dayName);
+
+                    // Clear the current options
+                    const startSelect = document.getElementById('start_time');
+                    const endSelect = document.getElementById('end_time');
+                    startSelect.innerHTML = '<option value="">Select Start Time</option>';
+                    endSelect.innerHTML = '<option value="">Select End Time</option>';
+
+                    // Populate start_time select
+                    if (start !== "00:00:00" && end !== "00:00:00") {
+                        const startTime = new Date(`1970-01-01T${start}Z`);
+                        const endTime = new Date(`1970-01-01T${end}Z`);
+
+                        // Generate time options in 1-hour intervals
+                        for (let hour = startTime.getUTCHours(); hour <= endTime.getUTCHours(); hour++) {
+                            const timeOption = hour < 10 ? `0${hour}:00` : `${hour}:00`;
+                            const option = document.createElement("option");
+                            option.value = timeOption;
+                            option.textContent = timeOption;
+                            startSelect.appendChild(option);
+                        }
+
+                        // Populate end_time select
+                        for (let hour = startTime.getUTCHours(); hour <= endTime.getUTCHours(); hour++) {
+                            const timeOption = hour < 10 ? `0${hour}:00` : `${hour}:00`;
+                            const option = document.createElement("option");
+                            option.value = timeOption;
+                            option.textContent = timeOption;
+                            endSelect.appendChild(option);
+                        }
+                    }
+                }
+            });
+        </script>
+    </body>
+
+</html>
