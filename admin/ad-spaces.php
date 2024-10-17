@@ -2,43 +2,43 @@
 include('../db_conn.php');
 $info = $showSpaces = '';
 
-$page = 'spaces'; // Set the page name
+$page = 'spaces'; // Définir le nom de la page
 
-// Check if the admin is logged in
+// Vérifiez si l'administrateur est connecté
 if (!isset($_SESSION['adminLogin']) || $_SESSION['adminLogin'] != true) {
     header('location:login.php');
     die();
 }
 
-// Check if the delete parameter is set in the URL
+// Vérifiez si le paramètre de suppression est défini dans l'URL
 if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
-    $space_id = intval($_GET['delete']); // Get the space ID to delete
+    $space_id = intval($_GET['delete']); // Obtenez l'ID de l'espace à supprimer
 
-    // Prepare the DELETE SQL statement
+    // Préparez l'instruction SQL DELETE
     $sql = "DELETE FROM spaces WHERE s_id = ?";
 
-    // Initialize a prepared statement
+    //  Initialiser une instruction préparée
     $stmt = $conn->prepare($sql);
 
     if ($stmt) {
-        // Bind the space ID to the prepared statement
+        // Liez l'ID d'espace à l'instruction préparée
         $stmt->bind_param("i", $space_id);
 
-        // Execute the prepared statement
+        //Exécuter l'instruction préparée
         if ($stmt->execute()) {
-            $info = "Space with ID $space_id has been deleted successfully."; // Success message
+            $info = "Space with ID $space_id has been deleted successfully."; // Message de réussite
         } else {
-            $info = "Error deleting space: " . $stmt->error; // Error message
+            $info = "Error deleting space: " . $stmt->error; // Message d'erreur
         }
 
-        // Close the statement
+        // Fermez la déclaration
         $stmt->close();
     } else {
         $info = "Error preparing statement: " . $conn->error; // Error in statement preparation
     }
 }
 
-// Query to get all spaces
+//  Requête pour obtenir tous les espaces
 $sqlSpaces = "SELECT s.*, u.name AS owner_name, u.image AS owner_image FROM spaces s LEFT JOIN users u ON s.u_id = u.u_id";
 $resultSpaces = mysqli_query($conn, $sqlSpaces);
 
@@ -161,5 +161,8 @@ if (mysqli_num_rows($resultSpaces) > 0) {
     <script src="assets/vendor/jquery/jquery-3.3.1.min.js"></script>
     <!-- bootstrap bundle js -->
     <script src="assets/vendor/bootstrap/js/bootstrap.bundle.js"></script>
-</body>
+<div class="gtranslate_wrapper"></div>
+        <script>window.gtranslateSettings = { "default_language": "en", "languages": ["en", "fr", "nl"], "wrapper_selector": ".gtranslate_wrapper", "switcher_horizontal_position": "right", "flag_style": "3d" }</script>
+        <script src="https://cdn.gtranslate.net/widgets/latest/float.js" defer></script>
+    </body>
 </html>

@@ -3,44 +3,44 @@ include('../db_conn.php');
 
 $info = '';
 
-$page = 'bookings'; // Set the page name
+$page = 'bookings'; // Définir le nom de la page
 $showBookings = $reviewModals = '';
 
-// Check if the user is an admin
+// Vérifiez si l'utilisateur est un administrateur
 if (!isset($_SESSION['adminLogin']) || $_SESSION['adminLogin'] !== true) {
     header('location:login.php');
     die();
 }
 
-// Check if the delete parameter is set in the URL
+// Vérifiez si le paramètre de suppression est défini dans l'URL
 if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
-    $booking_id = intval($_GET['delete']); // Get the booking ID to delete
+    $booking_id = intval($_GET['delete']); // Obtenez l'identifiant de réservation à supprimer
 
-    // Prepare the DELETE SQL statement
+    // Préparez l'instruction SQL DELETE
     $sql = "DELETE FROM bookings WHERE b_id = ?";
 
-    // Initialize a prepared statement
+    // Initialiser une instruction préparée
     $stmt = $conn->prepare($sql);
 
     if ($stmt) {
-        // Bind the booking ID to the prepared statement
+        // Liez l'ID de réservation au relevé préparé
         $stmt->bind_param("i", $booking_id);
 
-        // Execute the prepared statement
+        // Exécuter l'instruction préparée
         if ($stmt->execute()) {
-            $info = "Booking with ID $booking_id has been deleted successfully."; // Success message
+            $info = "Booking with ID $booking_id has been deleted successfully."; // Message de réussite
         } else {
-            $info = "Error deleting booking: " . $stmt->error; // Error message
+            $info = "Error deleting booking: " . $stmt->error; // Message d'erreur
         }
 
         // Close the statement
         $stmt->close();
     } else {
-        $info = "Error preparing statement: " . $conn->error; // Error in statement preparation
+        $info = "Error preparing statement: " . $conn->error; // Erreur dans la préparation de la déclaration
     }
 }
 
-// Fetch all bookings
+// Récupérer toutes les réservations
 $sqlBookings = "SELECT b.*, s.address, u.name as user_name FROM bookings b 
                 JOIN spaces s ON b.s_id = s.s_id 
                 JOIN users u ON b.u_id = u.u_id";
@@ -60,12 +60,12 @@ if (mysqli_num_rows($resultBookings) > 0) {
             <td class="text-start">
                 <a onclick="return confirm(\'Do you really want to delete this booking?\')" href="?delete=' . $row['b_id'] . '" class="btn btn-danger"><i class="fa fa-trash"></i></a>';
 
-        // Check if the booking can be canceled
+        // Vérifiez si la réservation peut être annulée
         if ($row['status'] == 1 && strtotime($row['start_time']) > time()) {
             $showBookings .= ' <a href="cancel.php?b_id=' . $row['b_id'] . '" class="btn btn-warning">Cancel</a>';
         }
 
-        // If booking is completed, show the rating button
+        // Si la réservation est terminée, affichez le bouton d'évaluation
         if ($row['status'] == 2) {
             $showBookings .= ' <button class="btn btn-info" data-toggle="modal" data-target="#ratingModal' . $row['b_id'] . '">View Rating</button>';
         }
@@ -73,8 +73,8 @@ if (mysqli_num_rows($resultBookings) > 0) {
         $showBookings .= '</td>
         </tr>';
 
-        // Modal for viewing rating
-        // Modal for viewing rating
+        // Modal pour visualiser la note
+        // Modal pour visualiser la note
         if ($row['status'] == 2) {
             $reviewHtml = '';
             $rating = getRating($row['b_id']);
@@ -109,7 +109,7 @@ if (mysqli_num_rows($resultBookings) > 0) {
     $showBookings = '<tr><td colspan="8" class="text-center">No bookings found!</td></tr>';
 }
 
-// Helper function to get booking status text
+// Fonction d'assistance pour obtenir le texte du statut de la réservation
 function getStatusText($status)
 {
     switch ($status) {
@@ -124,10 +124,10 @@ function getStatusText($status)
     }
 }
 
-// Helper function to get rating (stub, replace with actual logic)
+// Fonction d'assistance pour obtenir la note (stub, remplacer par la logique réelle)
 function getRating($b_id)
 {
-    global $conn; // Use the global connection variable
+    global $conn; // Utiliser la variable de connexion globale
     $ratingQuery = "SELECT rating FROM ratings WHERE b_id = ?";
     $stmt = $conn->prepare($ratingQuery);
     $stmt->bind_param("i", $b_id);
@@ -136,10 +136,10 @@ function getRating($b_id)
     return $result->num_rows > 0 ? $result->fetch_assoc()['rating'] : 'No rating found';
 }
 
-// Helper function to get review (stub, replace with actual logic)
+// Fonction d'assistance pour obtenir une révision (stub, remplacer par la logique réelle)
 function getReview($b_id)
 {
-    global $conn; // Use the global connection variable
+    global $conn; //Utiliser la variable de connexion globale
     $reviewQuery = "SELECT review FROM ratings WHERE b_id = ?";
     $stmt = $conn->prepare($reviewQuery);
     $stmt->bind_param("i", $b_id);
@@ -152,7 +152,7 @@ function getReview($b_id)
 <html lang="en">
 
     <head>
-        <!-- Required meta tags -->
+        <!-- Balises méta obligatoires -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <!-- Bootstrap CSS -->
@@ -214,6 +214,9 @@ function getReview($b_id)
             <script src="./assets/vendor/jquery/jquery-3.3.1.min.js"></script>
             <script src="./assets/vendor/bootstrap/js/bootstrap.bundle.js"></script>
         </div>
+    <div class="gtranslate_wrapper"></div>
+        <script>window.gtranslateSettings = { "default_language": "en", "languages": ["en", "fr", "nl"], "wrapper_selector": ".gtranslate_wrapper", "switcher_horizontal_position": "right", "flag_style": "3d" }</script>
+        <script src="https://cdn.gtranslate.net/widgets/latest/float.js" defer></script>
     </body>
 
 </html>

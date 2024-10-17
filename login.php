@@ -1,46 +1,46 @@
 <?php
 include('db_conn.php');
-// Check if the form is submitted
+// Vérifiez si le formulaire est soumis
 $info = '';
-// Check if the form is submitted
+// Vérifiez si le formulaire est soumis
 if (isset($_POST['login'])) {
-    // Retrieve form data
+    // Récupérer les données du formulaire
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    // Assuming you have already established a database connection
+    // En supposant que vous ayez déjà établi une connexion à la base de données
 
-    // Escape special characters to prevent SQL injection
+    // Échapper aux caractères spéciaux pour empêcher l'injection SQL
     $email = mysqli_real_escape_string($conn, $email);
     $password = mysqli_real_escape_string($conn, $password);
 
-    // Fetch user data from the database based on the provided email
+    // Récupérer les données utilisateur de la base de données en fonction de l'e-mail fourni
     $query = "SELECT * FROM users WHERE email = '$email'";
     $result = mysqli_query($conn, $query);
 
     if (mysqli_num_rows($result) > 0) {
-        // User with the provided email exists in the database
+        // L'utilisateur avec l'e-mail fourni existe dans la base de données
         $user = mysqli_fetch_assoc($result);
 
-        // Verify the password
+        // Vérifiez le mot de passe
         if (password_verify($password, $user['password'])) {
-            // Password is correct
+            // Le mot de passe est correct
 
-            // Store relevant user information in session variables
+            // Stocker les informations utilisateur pertinentes dans les variables de session
             $_SESSION['loggedIn'] = true;
             $_SESSION['u_id'] = $user['u_id'];
             $_SESSION['name'] = $user['name'];
             $_SESSION['type'] = $user['type'];
 
-            // Redirect to the desired page after successful login
+            // Redirection vers la page souhaitée après une connexion réussie
             header("Location: index.php"); // Replace 'dashboard.php' with your desired page
             exit();
         } else {
-            // Password is incorrect
+            // Le mot de passe est incorrect
             $info = '<div class="alert alert-danger">Invalid Password..</div>';
         }
     } else {
-        // User with the provided email does not exist in the database
+        // L'utilisateur avec l'e-mail fourni n'existe pas dans la base de données
             $info = '<div class="alert alert-danger">Account not found!</div>';
     }
 }
@@ -92,6 +92,9 @@ if (isset($_POST['login'])) {
             </section>
         </main>
         <?php include_once './footer.php'; ?>
+    <div class="gtranslate_wrapper"></div>
+        <script>window.gtranslateSettings = { "default_language": "en", "languages": ["en", "fr", "nl"], "wrapper_selector": ".gtranslate_wrapper", "switcher_horizontal_position": "right", "flag_style": "3d" }</script>
+        <script src="https://cdn.gtranslate.net/widgets/latest/float.js" defer></script>
     </body>
     <script src="./assets/js/bootstrap.bundle.min.js"></script>
     <script src="./assets/js/jquery-3.6.1.min.js"></script>

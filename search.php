@@ -1,8 +1,8 @@
 <?php
 include('db_conn.php');
-// Check if the form is submitted
+// Vérifiez si le formulaire est soumis
 $info = $show = '';
-// Check if the form is submitted
+// Vérifiez si le formulaire est soumis
 if (isset($_POST['search'])) {
     // print_r($_REQUEST);
     $day = mysqli_real_escape_string($conn, $_REQUEST['start_day']);
@@ -188,6 +188,9 @@ if (isset($_POST['search'])) {
             </section>
         </main>
         <?php include_once './footer.php'; ?>
+    <div class="gtranslate_wrapper"></div>
+        <script>window.gtranslateSettings = { "default_language": "en", "languages": ["en", "fr", "nl"], "wrapper_selector": ".gtranslate_wrapper", "switcher_horizontal_position": "right", "flag_style": "3d" }</script>
+        <script src="https://cdn.gtranslate.net/widgets/latest/float.js" defer></script>
     </body>
     <script src="./assets/js/bootstrap.bundle.min.js"></script>
     <script src="./assets/js/jquery-3.6.1.min.js"></script>
@@ -195,18 +198,18 @@ if (isset($_POST['search'])) {
         async defer></script>
     <script src="./assets/js/script.js?v=1_1"></script>
     <script>
-        // Initialize the map
+        // Initialiser la carte
         function initMap() {
             const map = new google.maps.Map(document.getElementById("map"), {
                 center: { lat: 50.5039, lng: 4.4699 },
                 zoom: 7
             });
 
-            // Fetch available spaces and place markers on the map
+            // Récupérez les espaces disponibles et placez des marqueurs sur la carte
             fetchSpaces(map);
         }
 
-        // Fetch spaces from the server
+        // Récupérer des espaces sur le serveur
         function fetchSpaces(map) {
             $.ajax({
                 url: 'ajax/fetch_all_spaces.php',
@@ -249,8 +252,8 @@ if (isset($_POST['search'])) {
                             }
                         }
                         const customIcon = {
-                            url: './assets/img/location.png', // URL or relative path to the custom icon
-                            scaledSize: new google.maps.Size(38, 38), // Adjust the size as needed
+                            url: './assets/img/location.png', // URL ou chemin relatif vers l'icône personnalisée
+                            scaledSize: new google.maps.Size(38, 38), // Ajustez la taille selon vos besoins
                         };
 
                         const marker = new google.maps.Marker({

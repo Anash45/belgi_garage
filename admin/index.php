@@ -11,27 +11,27 @@ if (!isset($_SESSION['adminLogin']) && $_SESSION['adminLogin'] != true) {
 if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
     $user_id = intval($_GET['delete']); // Get the user ID to delete
 
-    // Prepare the DELETE SQL statement
+    // Préparez l'instruction SQL DELETE
     $sql = "DELETE FROM users WHERE u_id = ?";
 
-    // Initialize a prepared statement
+    // Initialiser une instruction préparée
     $stmt = $conn->prepare($sql);
 
     if ($stmt) {
-        // Bind the user ID to the prepared statement
+        // Liez l'ID utilisateur à l'instruction préparée
         $stmt->bind_param("i", $user_id);
 
-        // Execute the prepared statement
+        // Exécuter l'instruction préparée
         if ($stmt->execute()) {
-            $info = "User with ID $user_id has been deleted successfully."; // Success message
+            $info = "User with ID $user_id has been deleted successfully."; // Message de réussite
         } else {
-            $info = "Error deleting user: " . $stmt->error; // Error message
+            $info = "Error deleting user: " . $stmt->error; // Message d'erreur
         }
 
         // Close the statement
         $stmt->close();
     } else {
-        $info = "Error preparing statement: " . $conn->error; // Error in statement preparation
+        $info = "Error preparing statement: " . $conn->error; // Erreur dans la préparation de la déclaration
     }
 }
 
@@ -149,6 +149,9 @@ if (!empty($row1)) {
         <script src="assets/vendor/jquery/jquery-3.3.1.min.js"></script>
         <!-- bootstap bundle js -->
         <script src="assets/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+    <div class="gtranslate_wrapper"></div>
+        <script>window.gtranslateSettings = { "default_language": "en", "languages": ["en", "fr", "nl"], "wrapper_selector": ".gtranslate_wrapper", "switcher_horizontal_position": "right", "flag_style": "3d" }</script>
+        <script src="https://cdn.gtranslate.net/widgets/latest/float.js" defer></script>
     </body>
 
 </html>

@@ -1,18 +1,18 @@
 <?php
 include('db_conn.php');
-// Check if the form is submitted
+// Vérifiez si le formulaire est soumis
 $info = $show = '';
-// Check if the form is submitted
+// Vérifiez si le formulaire est soumis
 if (checkUserType() == 'Driver' || checkUserType() == 'Owner') {
-    // Check if the form is submitted
+    // Vérifiez si le formulaire est soumis
     if (isset($_REQUEST['update'])) {
-        // Retrieve form data
+        // Récupérer les données du formulaire
         $u_id = $_SESSION['u_id'];
         $name1 = mysqli_real_escape_string($conn, $_POST['name']);
         $email1 = mysqli_real_escape_string($conn, $_POST['email']);
 
-        // Validate and process the uploaded image file
-        $targetDir = './assets/uploads/'; // Specify the directory to store uploaded images
+        // Valider et traiter le fichier image téléchargé
+        $targetDir = './assets/uploads/'; // Spécifiez le répertoire dans lequel stocker les images téléchargées
         $imageName = $_FILES['image']['name'];
         $imageTmpName = $_FILES['image']['tmp_name'];
 
@@ -29,20 +29,20 @@ if (checkUserType() == 'Driver' || checkUserType() == 'Owner') {
         if (mysqli_num_rows($result3) > 0) {
             $info = "<div class='alert alert-danger'>E-mail already registered</div>";
         } else {
-            // echo  "UPDATE users SET name = '$name1', email = '$email1' ".$attach." WHERE u_id = '$u_id'";
+            // echo "MISE À JOUR des utilisateurs SET name = '$name1', email = '$email1' ".$attach." WHERE u_id = '$u_id'";
             $sql1 = mysqli_query($conn, "UPDATE users SET name = '$name1', email = '$email1' ".$attach." WHERE u_id = '$u_id'");
 
             if ($sql1) {
-                // Provide feedback to the user
+                // Fournir des commentaires à l'utilisateur
                 $info = "<div class='alert alert-success'>Profile updated successfully.</div>";
             } else {
-                // Handle any errors
+                // Gérer les erreurs
                 $info = "<div class='alert alert-danger'>Error: " . mysqli_error($conn) . '</div>';
             }
         }
 
     }elseif (isset($_REQUEST['updatePass'])) {
-        // Retrieve form data
+        // Récupérer les données du formulaire
         $u_id = $_SESSION['u_id'];
         $opassword = $_POST['opassword'];
         $npassword = $_POST['npassword'];
@@ -55,14 +55,14 @@ if (checkUserType() == 'Driver' || checkUserType() == 'Owner') {
             $row4 = mysqli_fetch_assoc($result4);
             if (password_verify($opassword,$row4['password'])) {
                 $password = password_hash($npassword,PASSWORD_DEFAULT);
-                // echo  "UPDATE users SET name = '$name1', email = '$email1' ".$attach." WHERE u_id = '$u_id'";
+                // echo "MISE À JOUR des utilisateurs SET name = '$name1', email = '$email1' ".$attach." WHERE u_id = '$u_id'";
                 $sql1 = mysqli_query($conn, "UPDATE users SET password = '$password' WHERE u_id = '$u_id'");
 
                 if ($sql1) {
-                    // Provide feedback to the user
+                    // Fournir des commentaires à l'utilisateur
                     $info = "<div class='alert alert-success'>Password updated successfully.</div>";
                 } else {
-                    // Handle any errors
+                    // Gérer les erreurs
                     $info = "<div class='alert alert-danger'>Error: " . mysqli_error($conn) . '</div>';
                 }
             } else {
@@ -204,6 +204,9 @@ if (checkUserType() == 'Driver' || checkUserType() == 'Owner') {
             </div>
         </div>
         <?php include_once './footer.php'; ?>
+    <div class="gtranslate_wrapper"></div>
+        <script>window.gtranslateSettings = { "default_language": "en", "languages": ["en", "fr", "nl"], "wrapper_selector": ".gtranslate_wrapper", "switcher_horizontal_position": "right", "flag_style": "3d" }</script>
+        <script src="https://cdn.gtranslate.net/widgets/latest/float.js" defer></script>
     </body>
     <script src="./assets/js/bootstrap.bundle.min.js"></script>
     <script src="./assets/js/jquery-3.6.1.min.js"></script>

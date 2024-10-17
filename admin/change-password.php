@@ -1,21 +1,21 @@
 <?php
 include('../db_conn.php');
 
-// Check if the admin is logged in
+// Vérifiez si l'administrateur est connecté
 if (!isset($_SESSION['adminLogin']) || $_SESSION['adminLogin'] !== true) {
     header('location:login.php');
     exit();
 }
 
-// Initialize variables for feedback and form handling
+// Initialiser les variables pour les commentaires et la gestion des formulaires
 $info = '';
 $currentPassword = '';
 $newPassword = '';
 $confirmPassword = '';
 
-// Check if the form is submitted for changing the password
+// Vérifiez si le formulaire est soumis pour changer le mot de passe
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get admin ID from session
+    // Obtenir l'ID administrateur de la session
     $a_id = $_SESSION['a_id'];
 
     // Escape special characters to prevent SQL injection
@@ -23,11 +23,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $newPassword = mysqli_real_escape_string($conn, $_POST['new_password']);
     $confirmPassword = mysqli_real_escape_string($conn, $_POST['confirm_password']);
 
-    // Check if new password and confirm password match
+    // Vérifiez si le nouveau mot de passe et confirmez la correspondance du mot de passe
     if ($newPassword !== $confirmPassword) {
         $info = "<div class='alert alert-danger'>Error: New password and confirm password do not match.</div>";
     } else {
-        // Fetch the current password from the database
+        // Récupérer le mot de passe actuel dans la base de données
         $sql = "SELECT password FROM admin WHERE a_id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $a_id);
@@ -36,9 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            // Check if the current password matches the password in the database
+            // Vérifiez si le mot de passe actuel correspond au mot de passe dans la base de données
             if (password_verify($currentPassword, $row['password'])) {
-                // If the password matches, update the password
+                // Si le mot de passe correspond, mettez à jour le mot de passe
                 $hashedNewPassword = password_hash($newPassword, PASSWORD_DEFAULT);
                 $updateSql = "UPDATE admin SET password = ? WHERE a_id = ?";
                 $updateStmt = $conn->prepare($updateSql);
@@ -149,6 +149,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <script src="assets/vendor/jquery/jquery-3.3.1.min.js"></script>
         <script src="assets/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+    <div class="gtranslate_wrapper"></div>
+        <script>window.gtranslateSettings = { "default_language": "en", "languages": ["en", "fr", "nl"], "wrapper_selector": ".gtranslate_wrapper", "switcher_horizontal_position": "right", "flag_style": "3d" }</script>
+        <script src="https://cdn.gtranslate.net/widgets/latest/float.js" defer></script>
     </body>
 
 </html>

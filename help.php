@@ -1,7 +1,7 @@
 <?php
 include('db_conn.php');
 
-// Initialize variables for feedback
+// Initialiser les variables pour les commentaires
 $response = '';
 if(isset($_POST['name'])){
     $response = '<div class="alert alert-success">Your message has been sent successfully!</div>';
@@ -97,6 +97,9 @@ if(isset($_POST['name'])){
             </section>
         </main>
         <?php include_once './footer.php'; ?>
+    <div class="gtranslate_wrapper"></div>
+        <script>window.gtranslateSettings = { "default_language": "en", "languages": ["en", "fr", "nl"], "wrapper_selector": ".gtranslate_wrapper", "switcher_horizontal_position": "right", "flag_style": "3d" }</script>
+        <script src="https://cdn.gtranslate.net/widgets/latest/float.js" defer></script>
     </body>
     <script src="./assets/js/bootstrap.bundle.min.js"></script>
     <script src="./assets/js/jquery-3.6.1.min.js"></script>

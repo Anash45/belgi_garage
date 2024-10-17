@@ -1,6 +1,6 @@
 <?php
 include('db_conn.php');
-// Check if the form is submitted
+// Vérifiez si le formulaire est soumis
 $info = $show = '';
 if (checkUserType() != 'Driver') {
     $show = '<div class="alert alert-danger">Only drivers are allowed on this page. <a href="./login.php" class="text-primary text-decoration-underline">Login here</a></div>';
@@ -222,6 +222,9 @@ if (checkUserType() != 'Driver') {
             </section>
         </main>
         <?php include_once './footer.php'; ?>
+    <div class="gtranslate_wrapper"></div>
+        <script>window.gtranslateSettings = { "default_language": "en", "languages": ["en", "fr", "nl"], "wrapper_selector": ".gtranslate_wrapper", "switcher_horizontal_position": "right", "flag_style": "3d" }</script>
+        <script src="https://cdn.gtranslate.net/widgets/latest/float.js" defer></script>
     </body>
     <script src="./assets/js/bootstrap.bundle.min.js"></script>
     <script src="./assets/js/jquery-3.6.1.min.js"></script>
@@ -232,9 +235,9 @@ if (checkUserType() != 'Driver') {
         let availabilityData = <?php echo $avaliability_json; ?>;
         console.log(JSON.stringify(availabilityData));
 
-        // Check the value of `full_time`
+        // Vérifiez la valeur de `full_time`
         const full_time = availabilityData[0].full_time === "1";
-        // Function to check if a day has available start and end times
+        // Fonction pour vérifier si une journée a des heures de début et de fin disponibles
         function isAvailable(day) {
             const dayData = availabilityData.find(obj => obj[day]);
             console.log(dayData);
@@ -244,7 +247,7 @@ if (checkUserType() != 'Driver') {
             }
             return false;
         }
-        // Function to get available times for a given day
+        // Fonction pour obtenir les heures disponibles pour un jour donné
         function getAvailableTimes(day) {
             const dayData = availabilityData.find(obj => obj[day]);
             if (dayData) {
@@ -254,63 +257,64 @@ if (checkUserType() != 'Driver') {
             return { start: "00:00:00", end: "00:00:00" };
         }
 
-        // Initialize Flatpickr with conditional date enabling
+        // Initialiser Flatpickr avec l'activation de la date conditionnelle
+        
         flatpickr("#day", {
             minDate: "today",
-            maxDate: new Date().fp_incr(6), // Next 6 days
-            dateFormat: "m/d/Y",        // Specify the date format
+            maxDate: new Date().fp_incr(6), // 6 prochains jours
+            dateFormat: "m/d/Y",        // Spécifiez le format de date
             enable: [
                 function (date) {
-                    // If full_time is true, enable all dates
+                    // Si full_time est vrai, activez toutes les dates
                     if (full_time) return true;
 
                     console.log(full_time);
-                    // Get the day name from the date
+                    // Obtenez le nom du jour à partir de la date
                     const dayNames = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
-                    const dayName = dayNames[date.getDay()]; // Get the day name from the date
+                    const dayName = dayNames[date.getDay()]; // Obtenez le nom du jour à partir de la date
 
-                    // Enable only if the day has available hours
+                    // Activer uniquement si la journée a des heures disponibles
                     return isAvailable(dayName);
                 }
             ],
             onChange: function (selectedDates) {
                 const selectedDate = selectedDates[0];
                 const dayNames = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
-                const dayName = dayNames[selectedDate.getDay()]; // Get the day name from the date
+                const dayName = dayNames[selectedDate.getDay()]; // Obtenez le nom du jour à partir de la date
 
-                // Clear the current options
+                // Effacer les options actuelles
                 const startSelect = document.getElementById('start_time');
                 const endSelect = document.getElementById('end_time');
                 startSelect.innerHTML = '<option value="">Select Start Time</option>';
                 endSelect.innerHTML = '<option value="">Select End Time</option>';
 
-                // Populate time select options
+                // Remplir les options de sélection de l'heure
                 if (full_time) {
-                    // If full_time is true, create options from 00:00 to 23:00
+                    // Si full_time est vrai, créez des options de 00h00 à 23h00
                     for (let hour = 0; hour < 24; hour++) {
                         const timeOption = hour < 10 ? `0${hour}:00` : `${hour}:00`;
 
-                        // Create start time option
+                        // Créer une option d'heure de début
                         const startOption = document.createElement("option");
                         startOption.value = timeOption;
                         startOption.textContent = timeOption;
                         startSelect.appendChild(startOption);
 
-                        // Create end time option
+                        // Créer une option d'heure de fin
                         const endOption = document.createElement("option");
                         endOption.value = timeOption;
                         endOption.textContent = timeOption;
                         endSelect.appendChild(endOption);
                     }
                 } else {
-                    // If full_time is false, get available times for the selected day
+                    // Si full_time est faux, obtenez les heures disponibles pour le jour sélectionné
                     const { start, end } = getAvailableTimes(dayName);
 
                     if (start !== "00:00:00" && end !== "00:00:00") {
                         const startTime = new Date(`1970-01-01T${start}Z`);
                         const endTime = new Date(`1970-01-01T${end}Z`);
 
-                        // Generate time options in 1-hour intervals for start_time
+                        //  Générer des options de temps par intervalles d'une heure pour start_time
                         for (let hour = startTime.getUTCHours(); hour <= endTime.getUTCHours(); hour++) {
                             const timeOption = hour < 10 ? `0${hour}:00` : `${hour}:00`;
                             const option = document.createElement("option");
@@ -319,7 +323,7 @@ if (checkUserType() != 'Driver') {
                             startSelect.appendChild(option);
                         }
 
-                        // Populate end_time select
+                        // Remplir la sélection end_time
                         for (let hour = startTime.getUTCHours(); hour <= endTime.getUTCHours(); hour++) {
                             const timeOption = hour < 10 ? `0${hour}:00` : `${hour}:00`;
                             const option = document.createElement("option");

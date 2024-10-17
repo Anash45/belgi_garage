@@ -1,15 +1,15 @@
 <?php
 include('db_conn.php');
-// Check if the form is submitted
+// Vérifiez si le formulaire est soumis
 $info = $show = '';
-// Check if the form is submitted
+// Vérifiez si le formulaire est soumis
 if (checkUserType() == 'Driver') {
     // print_r($_REQUEST);
     $u_id = $_SESSION['u_id'];
-    $booking_id = isset($_GET['cancel']) ? intval($_GET['cancel']) : 0; // Booking ID from URL
+    $booking_id = isset($_GET['cancel']) ? intval($_GET['cancel']) : 0; // ID de réservation à partir de l'URL
 
     if ($booking_id > 0) {
-        // Check if the booking belongs to the logged-in user
+        // Vérifiez si la réservation appartient à l'utilisateur connecté
         $query = "SELECT * FROM bookings WHERE b_id = ? AND u_id = ? AND `status` = 1";
         $stmt = $conn->prepare($query);
         $stmt->bind_param('ii', $booking_id, $u_id);
@@ -17,7 +17,7 @@ if (checkUserType() == 'Driver') {
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
-            // Booking belongs to the user, update the status to cancel it
+            // La réservation appartient à l'utilisateur, mettez à jour le statut pour l'annuler
             $update_query = "UPDATE bookings SET status = 0 WHERE b_id = ?";
             $update_stmt = $conn->prepare($update_query);
             $update_stmt->bind_param('i', $booking_id);
@@ -73,13 +73,13 @@ if (checkUserType() == 'Driver') {
             if (!empty($row1)) {
                 $location = 'https://www.google.com/maps?q=' . $row1['latitude'] . ',' . $row1['longitude'];
 
-                // Determine if "Cancel" button should be shown
+                // Déterminer si le bouton "Annuler" doit être affiché
                 $showCancelButton = ($bookingDate > $currentDateTime && $bookingDate->diff($currentDateTime)->days >= 1 && $row2['status'] != 0);
-                // Determine if "Rate" button should be shown
+                // Déterminer si le bouton « Tarif » doit être affiché
                 $showRateButton = ($endTime < $currentDateTime);
 
                 $rating = '';
-                // Generate button HTML
+                // Générer un bouton HTML
                 $buttonsHtml = $cardFooter = '';
                 if ($showCancelButton) {
                     $buttonsHtml .= '<a href="?cancel=' . $row2['b_id'] . '" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="You can cancel the booking 1 day before the date of booking">Cancel</a>';
@@ -89,7 +89,7 @@ if (checkUserType() == 'Driver') {
                 if ($showRateButton) {
 
                     if ($row2['status'] == 2) {
-                    // Fetch and display rating
+                    // Récupérer et afficher la note
                     $sql3 = "SELECT rating, review FROM `ratings` 
                     WHERE `b_id` = '$b_id'";
                     $result3 = mysqli_query($conn, $sql3);
@@ -170,6 +170,9 @@ if (checkUserType() == 'Driver') {
             </section>
         </main>
         <?php include_once './footer.php'; ?>
+    <div class="gtranslate_wrapper"></div>
+        <script>window.gtranslateSettings = { "default_language": "en", "languages": ["en", "fr", "nl"], "wrapper_selector": ".gtranslate_wrapper", "switcher_horizontal_position": "right", "flag_style": "3d" }</script>
+        <script src="https://cdn.gtranslate.net/widgets/latest/float.js" defer></script>
     </body>
     <!-- Modal -->
     <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">

@@ -1,51 +1,51 @@
 <?php
 function getEarningsBySpaceId($conn, $s_id) {
-    // Sanitize s_id to ensure it's an integer
-    $s_id = intval($s_id); // This converts the variable to an integer
+    // Désinfectez s_id pour vous assurer qu'il s'agit d'un nombre entier
+    $s_id = intval($s_id); // Cela convertit la variable en entier
 
-    // SQL query to sum up the total earnings for the given space ID (s_id)
+    // Requête SQL pour résumer les gains totaux pour l'ID d'espace donné (s_id)
     $sql = "SELECT SUM(total) AS total_earnings FROM bookings WHERE s_id = $s_id AND `status` != 0";
     
-    // Execute the query
+    // Exécuter la requête
     $result = $conn->query($sql);
 
-    // Check if the query was successful
+    // Vérifiez si la requête a réussi
     if ($result) {
         $row = $result->fetch_assoc();
         $totalEarnings = $row['total_earnings'];
     } else {
-        // Handle query failure (optional)
+        // Gérer les échecs de requête (facultatif)
         echo "Query Error: " . $conn->error;
-        return 0; // Return 0 on error
+        return 0; // Renvoie 0 en cas d'erreur
     }
 
 
-    // If there are no earnings, default to zero
+    // S'il n'y a pas de gains, par défaut à zéro
     return $totalEarnings ? $totalEarnings : 0;
 }
 
 function getUserById($conn, $userId) {
-    // Prepare the SQL statement to fetch the user by ID
-    $sql = "SELECT * FROM users WHERE u_id = ?"; // Change 'users' and 'id' to your actual table and column names
+    // Préparez l'instruction SQL pour récupérer l'utilisateur par ID
+    $sql = "SELECT * FROM users WHERE u_id = ?"; // Remplacez « utilisateurs » et « id » par les noms réels de vos tables et colonnes.
     $stmt = $conn->prepare($sql);
     
     if ($stmt === false) {
-        // Handle error if prepare fails
+        // Gérer l'erreur si la préparation échoue
         die('Prepare failed: ' . htmlspecialchars($conn->error));
     }
 
-    // Bind the user ID to the statement
-    $stmt->bind_param("i", $userId); // 'i' indicates that the parameter is an integer
+    // Lier l'ID utilisateur à l'instruction
+    $stmt->bind_param("i", $userId); // 'i' indique que le paramètre est un entier
     
-    // Execute the statement
+    // Exécuter l'instruction
     $stmt->execute();
     
-    // Bind the result to variables
+    // Lier le résultat à des variables
     $result = $stmt->get_result();
     
-    // Fetch the user data
+    // Récupérer les données utilisateur
     if ($row = $result->fetch_assoc()) {
-        // Return the user data as an associative array
+        // Renvoie les données utilisateur sous forme de tableau associatif
         return $row;
     } else {
         // If no user found, return null or handle accordingly

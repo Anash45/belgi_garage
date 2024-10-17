@@ -1,9 +1,9 @@
 <?php
 include('db_conn.php');
 include('functions.php');
-// Check if the form is submitted
+// Vérifiez si le formulaire est soumis
 $info = $show = '';
-// Check if the form is submitted
+// Vérifiez si le formulaire est soumis
 if (checkUserType() == 'Owner') {
     $u_id = $_SESSION['u_id'];
     $sql = "SELECT * FROM `spaces` WHERE `u_id` = '$u_id'";
@@ -11,7 +11,7 @@ if (checkUserType() == 'Owner') {
     $row = mysqli_fetch_assoc($result);
 
     if (!empty($row)) {
-        $show = ''; // Initialize $show before use
+        $show = ''; // Initialisez $show avant utilisation
         do {
             $s_id = $row['s_id'];
             $type = $row['type'];
@@ -21,7 +21,7 @@ if (checkUserType() == 'Owner') {
 
             $spaceEarnings = getEarningsBySpaceId($conn, $s_id);
 
-            // Query to count the number of bookings for the current space
+            // Requête pour compter le nombre de réservations pour l'espace actuel
             $sql_bookings = "SELECT COUNT(*) AS `booking_count` FROM `bookings` WHERE `s_id` = '$s_id'";
             $result_bookings = mysqli_query($conn, $sql_bookings);
             if (!$result_bookings) {
@@ -30,7 +30,7 @@ if (checkUserType() == 'Owner') {
             $row_bookings = mysqli_fetch_assoc($result_bookings);
             $booking_count = !empty($row_bookings['booking_count']) ? $row_bookings['booking_count'] : 0;
 
-            // Optional: Calculate average rating for the space
+            // Facultatif : Calculer la note moyenne de l'espace
             $sql_rating = "SELECT AVG(rating) AS `avg_rating`, COUNT(*) AS `total_rating` FROM `ratings` WHERE `s_id` = '$s_id'";
             $result_rating = mysqli_query($conn, $sql_rating);
             if (!$result_rating) {
@@ -59,7 +59,7 @@ if (checkUserType() == 'Owner') {
                     </div>
                 </div>
             </div>';
-        } while ($row = mysqli_fetch_assoc($result)); // Ensure $result is defined and valid before this line
+        } while ($row = mysqli_fetch_assoc($result)); // Assurez-vous que $result est défini et valide avant cette ligne
     } else {
         $show = '<div class="alert alert-danger">No spaces available!</div>';
     }
@@ -99,6 +99,9 @@ if (checkUserType() == 'Owner') {
             </section>
         </main>
         <?php include_once './footer.php'; ?>
+    <div class="gtranslate_wrapper"></div>
+        <script>window.gtranslateSettings = { "default_language": "en", "languages": ["en", "fr", "nl"], "wrapper_selector": ".gtranslate_wrapper", "switcher_horizontal_position": "right", "flag_style": "3d" }</script>
+        <script src="https://cdn.gtranslate.net/widgets/latest/float.js" defer></script>
     </body>
     <script src="./assets/js/bootstrap.bundle.min.js"></script>
     <script src="./assets/js/jquery-3.6.1.min.js"></script>

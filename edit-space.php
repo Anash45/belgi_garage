@@ -1,13 +1,13 @@
 <?php
 include('db_conn.php');
 
-// Function to check if the user is an admin or an owner
+// Fonction pour vérifier si l'utilisateur est un administrateur ou un propriétaire
 function isAdminOrOwner($conn, $s_id) {
     $userType = checkUserType();
     if ($userType === 'Admin') {
-        return true; // Allow access if user is admin
+        return true; // Autoriser l'accès si l'utilisateur est administrateur
     } elseif ($userType === 'Owner') {
-        // Check if the user is the owner of the space
+        // Vérifier si l'utilisateur est le propriétaire de l'espace
         $u_id = $_SESSION['u_id'];
         $query = "SELECT u_id FROM spaces WHERE s_id = ?";
         $stmt = $conn->prepare($query);
@@ -17,34 +17,34 @@ function isAdminOrOwner($conn, $s_id) {
 
         if ($result->num_rows > 0) {
             $space = $result->fetch_assoc();
-            return $space['u_id'] == $u_id; // Return true if the user is the owner
+            return $space['u_id'] == $u_id; // Renvoie vrai si l'utilisateur est le propriétaire
         }
     }
-    return false; // Not authorized
+    return false; // Non autorisé
 }
 
-// Check if space ID is provided
+// Vérifiez si l'ID d'espace est fourni
 if (!isset($_REQUEST['s_id'])) {
     header('location:spaces.php');
     die();
 }
 
-// Get the space ID from the URL parameter
+// Obtenez l'ID de l'espace à partir du paramètre URL
 $s_id = intval($_GET['s_id']);
 
-// Check user authorization
+// Vérifier l'autorisation de l'utilisateur
 if (!isAdminOrOwner($conn, $s_id)) {
     header('location:index.php?err=1');
     die();
 }
 
-// Initialize variables for feedback and existing data
+// Initialiser les variables pour les commentaires et les données existantes
 $info = '';
 $existingData = null;
 
-// Check if the form is submitted for updating data
+// Vérifiez si le formulaire est soumis pour la mise à jour des données
 if (isset($_POST['submit'])) {
-    // Escape special characters to prevent SQL injection
+    // Échapper aux caractères spéciaux pour empêcher l'injection SQL
     $post_code = mysqli_real_escape_string($conn, $_POST['post_code']);
     $address = mysqli_real_escape_string($conn, $_POST['address']);
     $latitude = mysqli_real_escape_string($conn, $_POST['latitude']);
@@ -53,7 +53,7 @@ if (isset($_POST['submit'])) {
     $description = isset($_POST['description']) ? mysqli_real_escape_string($conn, $_POST['description']) : '';
     $full_time = isset($_POST['full_time']) ? 1 : 0;
 
-    // Define day-specific timings with validation
+    // Définir des horaires spécifiques à la journée avec validation
     $days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
     $dayTimings = [];
     foreach ($days as $day) {
@@ -63,20 +63,20 @@ if (isset($_POST['submit'])) {
     }
     $rate = mysqli_real_escape_string($conn, $_POST['rate']);
 
-    // Validate form submission for day timings or full-time
+    // Valider la soumission du formulaire pour les horaires de jour ou à temps plein
     $hasTimeSlot = $full_time || array_filter($dayTimings, function ($times) {
         return !empty($times['start']) && !empty($times['end']);
     });
 
     if ($hasTimeSlot) {
-        // Check for duplicate space based on post_code, address, and type
+        // Vérifiez l'espace en double en fonction du code postal, de l'adresse et du type
         $checkQuery = "SELECT * FROM spaces WHERE post_code = '$post_code' AND address = '$address' AND type = '$type' AND s_id != $s_id";
         $checkResult = mysqli_query($conn, $checkQuery);
 
         if (mysqli_num_rows($checkResult) > 0) {
             $info = "<div class='alert alert-danger'>Error: Space with the same post code, address, and type already exists.</div>";
         } else {
-            // Prepare update query for the existing space
+            // Préparer une requête de mise à jour pour l'espace existant
             $updateQuery = "
                 UPDATE spaces SET 
                     post_code = '$post_code', 
@@ -114,7 +114,7 @@ if (isset($_POST['submit'])) {
     }
 }
 
-// Fetch existing data for the given space ID
+// Récupérer les données existantes pour l'ID d'espace donné
 if ($s_id > 0) {
     $fetchQuery = "SELECT * FROM spaces WHERE s_id = $s_id";
     $fetchResult = mysqli_query($conn, $fetchQuery);
@@ -728,6 +728,9 @@ if ($s_id > 0) {
             </section>
         </main>
         <?php include_once './footer.php'; ?>
+    <div class="gtranslate_wrapper"></div>
+        <script>window.gtranslateSettings = { "default_language": "en", "languages": ["en", "fr", "nl"], "wrapper_selector": ".gtranslate_wrapper", "switcher_horizontal_position": "right", "flag_style": "3d" }</script>
+        <script src="https://cdn.gtranslate.net/widgets/latest/float.js" defer></script>
     </body>
     <script src="./assets/js/bootstrap.bundle.min.js"></script>
     <script src="./assets/js/jquery-3.6.1.min.js"></script>
@@ -736,27 +739,27 @@ if ($s_id > 0) {
         let marker;
 
         function initMap() {
-            // PHP coordinates from the database (with fallback to Belgium if not set)
+            // Coordonnées PHP de la base de données (avec repli vers la Belgique si non défini)
             const dbLat = <?php echo isset($existingData['latitude']) ? $existingData['latitude'] : 51.0447; ?>;
             const dbLng = <?php echo isset($existingData['longitude']) ? $existingData['longitude'] : -114.0719; ?>;
 
             const initialPosition = { lat: dbLat, lng: dbLng };
 
-            // Create map centered on the database location
+            // Créer une carte centrée sur l'emplacement de la base de données
             map = new google.maps.Map(document.getElementById("map-selection"), {
                 zoom: 10,
                 center: initialPosition,
             });
 
-            // Place marker at the initial position
+            // Placer le marqueur à la position initiale
             placeMarker(initialPosition);
 
-            // Add click event listener to the map
+            // Ajouter un écouteur d'événement de clic à la carte
             map.addListener("click", (e) => {
                 placeMarker(e.latLng);
             });
 
-            // Set up the "Use Current Location" button
+            // Configurer le bouton "Utiliser l'emplacement actuel"
             $("#currentLocationBtn").click(() => {
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
@@ -779,7 +782,7 @@ if ($s_id > 0) {
         }
 
         function placeMarker(location) {
-            // If marker exists, update its position, otherwise create it
+            // Si le marqueur existe, mettez à jour sa position, sinon créez-le
             if (marker) {
                 marker.setPosition(location);
             } else {
@@ -788,7 +791,7 @@ if ($s_id > 0) {
                     map: map,
                 });
             }
-            // Update the hidden fields with the new marker position
+            // Mettez à jour les champs masqués avec la nouvelle position du marqueur
             $("#lat").val(location.lat);
             $("#lng").val(location.lng);
         }
@@ -799,23 +802,23 @@ if ($s_id > 0) {
 
         $(document).ready(() => {
             $('.days-availability .row').each(function () {
-                // Get both time-select elements in the same row
+                // Obtenez les deux éléments de sélection temporelle dans la même ligne
                 let timeSiblings = $(this).find('.time-select');
 
-                // Check if both have the value "00:00:00"
+                // Vérifiez si les deux ont la valeur "00:00:00"
                 let bothHaveDefault = true;
                 timeSiblings.each(function () {
                     if ($(this).attr('value') !== "00:00:00") {
                         bothHaveDefault = false;
-                        return false; // Break the loop if one is not default
+                        return false; // Rompre la boucle si ce n'est pas le cas par défaut
                     }
                 });
 
                 console.log(bothHaveDefault);
-                // Only set default values if both elements have "00:00:00"
+                // Ne définissez les valeurs par défaut que si les deux éléments ont "00:00:00"
                 if (!bothHaveDefault) {
                     timeSiblings.each(function () {
-                        $(this).val($(this).attr('value')); // Set to default value attribute
+                        $(this).val($(this).attr('value')); // Définir l'attribut de valeur par défaut
                     });
                 }
             });

@@ -1,15 +1,15 @@
 <?php
 include('db_conn.php');
-// Check if the form is submitted
+// Vérifiez si le formulaire est soumis
 $info = '';
-// Assuming you have already established a database connection
+// En supposant que vous ayez déjà établi une connexion à la base de données
 if (checkUserType() != 'Owner') {
     header('location:index.php?err=1');
 }
-// Check if the form is submitted
+// Vérifiez si le formulaire est soumis
 if (isset($_POST['submit'])) {
 
-    // Escape special characters to prevent SQL injection
+    // Échapper aux caractères spéciaux pour empêcher l'injection SQL
     $u_id = $_SESSION['u_id'];
     $post_code = mysqli_real_escape_string($conn, $_REQUEST['post_code']);
     $address = mysqli_real_escape_string($conn, $_REQUEST['address']);
@@ -72,15 +72,15 @@ if (isset($_POST['submit'])) {
     $rate = mysqli_real_escape_string($conn, $_REQUEST['rate']);
 
     if ($full_time == 1 || ((!empty($mon_start) && (!empty($mon_end)) || (!empty($tue_start) && !empty($tue_end)) || (!empty($wed_start) && !empty($wed_end)) || (!empty($thu_start) && !empty($thu_end)) || (!empty($fri_start) && !empty($fri_end)) || (!empty($sat_start) && !empty($sat_end)) || (!empty($sun_start) && !empty($sun_end))))) {
-        // Check if the same post code, address, and type already exist in the table
+        // Vérifiez si le même code postal, la même adresse et le même type existent déjà dans le tableau
         $checkQuery = "SELECT * FROM spaces WHERE post_code = '$post_code' AND address = '$address' AND type = '$type'";
         $checkResult = mysqli_query($conn, $checkQuery);
 
         if (mysqli_num_rows($checkResult) > 0) {
-            // Duplicate entry exists
+            // Une entrée en double existe
             $info = "<div class='alert alert-danger'>Error: The space with the same post code, address, and type already exists.</div>";
         } else {
-            // Insert the data into the spaces table
+            // Insérez les données dans la table des espaces
             $insertQuery = "INSERT INTO spaces (u_id, post_code, `address`, `type`, latitude, longitude, `description`, full_time,
                         mon_start, mon_end, tue_start, tue_end, wed_start, wed_end, thu_start, thu_end,
                         fri_start, fri_end, sat_start, sat_end, sun_start, sun_end, rate)
@@ -90,10 +90,10 @@ if (isset($_POST['submit'])) {
             $insertResult = mysqli_query($conn, $insertQuery);
 
             if ($insertResult) {
-                // Data insertion successful
+                // Insertion des données réussie
                 $info = "<div class='alert alert-success'>Space saved successfully.</div>";
             } else {
-                // Failed to insert data
+                // Échec de l'insertion des données
                 $info = "<div class='alert alert-danger'>Error: Failed to insert data into the table.</div>";
             }
         }
@@ -676,6 +676,9 @@ if (isset($_POST['submit'])) {
             </section>
         </main>
         <?php include_once './footer.php'; ?>
+    <div class="gtranslate_wrapper"></div>
+        <script>window.gtranslateSettings = { "default_language": "en", "languages": ["en", "fr", "nl"], "wrapper_selector": ".gtranslate_wrapper", "switcher_horizontal_position": "right", "flag_style": "3d" }</script>
+        <script src="https://cdn.gtranslate.net/widgets/latest/float.js" defer></script>
     </body>
     <script src="./assets/js/bootstrap.bundle.min.js"></script>
     <script src="./assets/js/jquery-3.6.1.min.js"></script>
@@ -687,20 +690,20 @@ if (isset($_POST['submit'])) {
         let marker;
 
         function initMap() {
-            const initialPosition = { lat: 50.5039, lng: 4.4699 }; // Default location (Belgium)
+            const initialPosition = { lat: 50.5039, lng: 4.4699 }; // Localisation par défaut (Belgium)
 
-            // Create map centered on the initial position
+            // Créer une carte centrée sur la position initiale
             map = new google.maps.Map(document.getElementById("map-selection"), {
                 zoom: 7,
                 center: initialPosition,
             });
 
-            // Add click event listener to the map
+            // Ajouter un écouteur d'événement de clic à la carte
             map.addListener("click", (e) => {
                 placeMarker(e.latLng);
             });
 
-            // Set up the "Use Current Location" button
+            // Configurer le bouton "Utiliser l'emplacement actuel"
             $("#currentLocationBtn").click(() => {
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(

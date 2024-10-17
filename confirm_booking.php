@@ -1,6 +1,6 @@
 <?php
 include('db_conn.php');
-// Check if the form is submitted
+//  Vérifiez si le formulaire est soumis
 $info = $show = '';
 if (checkUserType() != 'Driver') {
     $show = '<div class="alert alert-danger">Only drivers are allowed on this page.</div>';
@@ -16,7 +16,7 @@ if (checkUserType() != 'Driver') {
     $query = "INSERT INTO bookings (s_id, u_id, date, start_time, end_time, duration, total, payment_method) 
           VALUES ('$s_id', '$u_id', '$day', '$start_time', '$end_time', '$duration', '$total', '$payment_method')";
 
-    // Execute the query
+    // Exécuter la requête
     if (mysqli_query($conn, $query)) {
         $show = '<div class="alert alert-success"><b>Success</b><br>Booking created successfully. You can see all booking on your bookings page.</div>';
         unset($_SESSION['search']);
@@ -61,6 +61,9 @@ if (checkUserType() != 'Driver') {
             </section>
         </main>
         <?php include_once './footer.php'; ?>
+    <div class="gtranslate_wrapper"></div>
+        <script>window.gtranslateSettings = { "default_language": "en", "languages": ["en", "fr", "nl"], "wrapper_selector": ".gtranslate_wrapper", "switcher_horizontal_position": "right", "flag_style": "3d" }</script>
+        <script src="https://cdn.gtranslate.net/widgets/latest/float.js" defer></script>
     </body>
     <script src="./assets/js/bootstrap.bundle.min.js"></script>
     <script src="./assets/js/jquery-3.6.1.min.js"></script>

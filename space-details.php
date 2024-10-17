@@ -2,14 +2,14 @@
 include('db_conn.php');
 include('functions.php');
 
-// Check if the user is logged in and is of type Owner
+// Vérifiez si l'utilisateur est connecté et est de type Propriétaire
 $info = $show = '';
 if (checkUserType() == 'Owner') {
     $u_id = $_SESSION['u_id'];
-    $s_id = isset($_GET['s_id']) ? intval($_GET['s_id']) : 0; // Space ID from URL
-    $booking_id = isset($_GET['cancel']) ? intval($_GET['cancel']) : 0; // Booking ID from URL
+    $s_id = isset($_GET['s_id']) ? intval($_GET['s_id']) : 0; // ID d'espace à partir de l'URL
+    $booking_id = isset($_GET['cancel']) ? intval($_GET['cancel']) : 0; // ID de réservation à partir de l'URL
 
-    // Check if the space belongs to the logged-in user
+    // Vérifiez si l'espace appartient à l'utilisateur connecté
     $spaceQuery = "SELECT * FROM spaces WHERE s_id = ? AND u_id = ? ";
     $spaceStmt = $conn->prepare($spaceQuery);
     $spaceStmt->bind_param('ii', $s_id, $u_id);
@@ -18,7 +18,7 @@ if (checkUserType() == 'Owner') {
     $spaceRow = mysqli_fetch_assoc($spaceResult);
 
     if ($spaceResult->num_rows > 0) {
-        // Space belongs to the owner
+        // L'espace appartient au propriétaire
         if ($booking_id > 0) {
             // Check if the booking belongs to the space and is active
             $query = "SELECT * FROM bookings WHERE b_id = ? AND s_id = ? AND `status` = 1";
@@ -43,7 +43,7 @@ if (checkUserType() == 'Owner') {
             }
         }
 
-        // Fetch all bookings for the specific space
+        // Récupérer toutes les réservations pour l'espace spécifique
         $sql2 = "SELECT * FROM bookings WHERE s_id = ?";
         $stmt = $conn->prepare($sql2);
         $stmt->bind_param('i', $s_id);
@@ -58,9 +58,9 @@ if (checkUserType() == 'Owner') {
                 $endTime = new DateTime($row2['end_time']);
                 $currentDateTime = new DateTime();
 
-                // Determine if "Cancel" button should be shown
+                // Déterminer si le bouton "Annuler" doit être affiché
                 $showCancelButton = ($bookingDate > $currentDateTime && $bookingDate->diff($currentDateTime)->days >= 1 && $row2['status'] != 0);
-                $rating = ''; // Removed rating functionality
+                $rating = ''; // Fonctionnalité de notation supprimée
 
                 $buttonsHtml = '';
                 if ($showCancelButton) {
@@ -84,7 +84,7 @@ if (checkUserType() == 'Owner') {
 
                 $reviewHtml = $cardFooter = '';
                 if ($row2['status'] == 2) {
-                    // Fetch and display rating
+                    // Récupérer et afficher la note
                     $sql3 = "SELECT rating, review FROM `ratings` 
                     WHERE `b_id` = '$b_id'";
                     $result3 = mysqli_query($conn, $sql3);
@@ -167,6 +167,9 @@ if (checkUserType() == 'Owner') {
                 return new bootstrap.Tooltip(tooltipTriggerEl);
             });
         </script>
+    <div class="gtranslate_wrapper"></div>
+        <script>window.gtranslateSettings = { "default_language": "en", "languages": ["en", "fr", "nl"], "wrapper_selector": ".gtranslate_wrapper", "switcher_horizontal_position": "right", "flag_style": "3d" }</script>
+        <script src="https://cdn.gtranslate.net/widgets/latest/float.js" defer></script>
     </body>
 
 </html>
