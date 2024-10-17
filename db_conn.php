@@ -1,6 +1,7 @@
 <?php
 session_start();
-$conn = mysqli_connect('localhost', 'root', 'root', 'belgi_garage');
+// $conn = mysqli_connect('localhost', 'root', 'root', 'belgi_garage');
+$conn = mysqli_connect('localhost', 'u956940883_belgi_garage', '$VTE5F4s', 'u956940883_belgi_garage');
 if (!$conn) {
     die('Cannot connect to the database!');
 }
